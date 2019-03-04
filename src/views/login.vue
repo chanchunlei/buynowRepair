@@ -50,8 +50,7 @@
             api.Token({
               loginParams:loginParams,
               success: res=>{
-                //console.log(res);
-                if(res.status == 200){
+                if(res.data.code == 200){
                   this.logining = true;
                   sessionStorage.setItem("userName",this.ruleForm.account);
                   sessionStorage.setItem("token",res.data.data.token);
@@ -60,6 +59,12 @@
                   this.$message({
                     message: "登录成功！",
                     type: 'success'
+                  })
+                }else{
+                  this.logining = false;
+                  this.$message({
+                    message: res.data.msg,
+                    type: 'error'
                   })
                 }
               },

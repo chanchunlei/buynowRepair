@@ -28,7 +28,7 @@ axios.interceptors.response.use(//请求结束
         store.commit('LOGOUT');
         break;
       case 403:// 返回 403 账号密码错误
-        store.commit('LOGOUT');
+        router.push('/403');
         break;
       case 404:// 404 请求地址错误
         router.push('/404');

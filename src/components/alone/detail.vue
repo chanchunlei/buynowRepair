@@ -30,7 +30,7 @@
         <p><el-input v-model="receiptNo" placeholder="填写时，每个小票间请用“逗号”隔开"></el-input></p>
       </div>
       <div class="inpBox">
-        <p>销售员姓名 ：</p>
+        <p>工程师/销售员姓名 ：</p>
         <p><el-input v-model="salerName" placeholder="请输入姓名"></el-input></p>
       </div>
       <div class="inpBox">
@@ -429,14 +429,14 @@
             this.question3 = res.data.data.question3;
             this.question4 = res.data.data.question4;
             this.question5 = res.data.data.question5;
+            this.payOptions = [];
+            this.pay = [];
             res.data.data.order_pay.forEach(item => {
               let obj = {};
               obj.pid = item.pid;
               obj.payName = item.payName;
-              this.payOptions = [];
-              this.pay = [];
               this.payOptions.push(JSON.parse(JSON.stringify(obj)));
-              this.pay.push(item.pid);
+              this.pay.push(JSON.parse(JSON.stringify(item.pid)));
             });
             res.data.data.order_repair.forEach(item => {
               let obj = {};

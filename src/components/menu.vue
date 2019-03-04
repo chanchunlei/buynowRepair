@@ -1,25 +1,50 @@
 <template>
   <div id="menus">
     <div @click="collapseChange" class="retract">
-      <i class="el-icon-more"></i>
+      <i :class="this.$store.state.menu ? 'iconfont icon-xiangyou' : 'iconfont icon-xiangyou-copy'"></i>
     </div>
     <!--默认导航-->
     <el-menu class="el-menu-vertical-demo" :collapse="this.$store.state.menu" v-if="showName=='default'? true:false">
-      <!--2-->
-      <el-submenu index="2">
+      <!--1-->
+      <el-submenu index="1">
         <template slot="title">
-          <i class="iconfont icon-huiyuan"></i>
+          <i class="iconfont icon-0009"></i>
           <span slot="title">表单</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="2-1"><router-link to="/default" active-class>表单录入</router-link></el-menu-item>
+          <el-menu-item index="1-1"><router-link to="/default" active-class>表单录入</router-link></el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group>
-          <el-menu-item index="2-2"><router-link to="/formList" active-class>表单查看</router-link></el-menu-item>
+          <el-menu-item index="1-2"><router-link to="/formList" active-class>表单查看</router-link></el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+      <!--2-->
+      <el-submenu index="2">
+        <template slot="title">
+          <i class="iconfont icon-weixiu"></i>
+          <span slot="title">维修</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="2-1"><router-link to="/project" active-class>维修分类</router-link></el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group>
+          <el-menu-item index="2-2"><router-link to="/projectChildren" active-class>维修名称</router-link></el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+      <!--3-->
+      <el-submenu index="3">
+        <template slot="title">
+          <i class="iconfont icon-pinpai"></i>
+          <span slot="title">品牌</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="3-1"><router-link to="/brand" active-class>品牌分类</router-link></el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group>
+          <el-menu-item index="3-2"><router-link to="/brandChildren" active-class>品牌名称</router-link></el-menu-item>
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
-
   </div>
 </template>
 

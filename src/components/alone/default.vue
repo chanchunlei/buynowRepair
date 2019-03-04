@@ -8,6 +8,7 @@
           class="inline-input"
           v-model="seatDone"
           :fetch-suggestions="querySearch1"
+          @select="baseSelect"
           placeholder="请输入席位号">
           </el-autocomplete>
         </p>
@@ -32,7 +33,7 @@
         <p><el-input v-model="receiptNo" placeholder="填写时，每个小票间请用“逗号”隔开"></el-input></p>
       </div>
       <div class="inpBox">
-        <p>销售员姓名 ：</p>
+        <p>工程师/销售员姓名 ：</p>
         <p><el-input v-model="salerName" placeholder="请输入姓名"></el-input></p>
       </div>
       <div class="inpBox">
@@ -41,7 +42,7 @@
       </div>
       <div class="inpBox">
         <p>NO.编号：</p>
-        <p><el-input v-model="orderid" placeholder="请输入NO.编号(必填)"></el-input></p>
+        <p><el-input @change="NOchange" v-model="orderid" placeholder="请输入NO.编号(必填)"></el-input></p>
       </div>
       <div class="inpBox">
         <p>开单日期：</p>
@@ -156,10 +157,11 @@
       </el-table>
       <div class="remarks">
         <div class="remarksInpBox">备注：<el-input class="remarksInp" v-model="repairremark" placeholder="请输入备注信息"></el-input></div>
-        <div>维修小计：<span class="money">¥{{ repairMoney }}</span></div>
+        <div class="repairMoney">维修小计：<span class="money">¥{{ repairMoney }}</span></div>
         <div @click="addRepairListItem" class="addOne"><el-button size="mini" type="primary" icon="el-icon-edit" circle></el-button> 新增</div>
       </div>
     </div>
+
     <!--销售-->
     <div class="salesBox">
       <h2>销售</h2>
@@ -253,7 +255,7 @@
       </el-table>
       <div class="remarks">
         <div class="remarksInpBox">备注：<el-input class="remarksInp" v-model="sellremark" placeholder="请输入备注信息"></el-input></div>
-        <div>销售小计：<span class="money">¥{{sellMoney}}</span></div>
+        <div class="repairMoney">销售小计：<span class="money">¥{{sellMoney}}</span></div>
         <div @click="addSellListItem" class="addOne"><el-button size="mini" type="primary" icon="el-icon-edit" circle></el-button> 新增</div>
       </div>
     </div>
@@ -301,18 +303,6 @@
               <el-radio v-for="item in evaluate" :key="item.value" :label="item.value">{{item.label}}</el-radio>
             </el-radio-group>
           </div>
-          <p>4.您对本次维修的价格评价</p>
-          <div>
-            <el-radio-group v-model="question4">
-              <el-radio v-for="item in assess" :key="item.value" :label="item.value">{{item.label}}</el-radio>
-            </el-radio-group>
-          </div>
-          <p>5.您对本次维修的总体印象</p>
-          <div>
-            <el-radio-group v-model="question5">
-              <el-radio v-for="item in evaluate" :key="item.value" :label="item.value">{{item.label}}</el-radio>
-            </el-radio-group>
-          </div>
         </div>
       </div>
       <div class="collect">
@@ -340,10 +330,13 @@
         name: "defaultS",
       data(){
           return {
+            pickerOptions: {}, //设置原始日期
             seat: [], //原始席位号列表
             business: [], //原始商家列表
             baseArr1: [],  //基础数据席位号列表
+            baseArrWran1: [],  //席位号提示列表
             baseArr2: [],  //基础数据商家列表
+            baseArrWran2: [],  //商家提示列表
             allMoney: 0,   //总金额
 /*******************分割线***********************/
             seatDone: '',  //已填席位号
@@ -353,6 +346,7 @@
             salerName: '',//已填销售员姓名
             salerMobile: '',//已填销售员电话
             orderid: '',//已填维修单号
+            orderidStatus: false,//维修单号是否重复,true重复、false不重复
             orderDate: '',//已选开单时间
 /*******************分割线***********************/
             repairTableData: [], //处理维修列表数据
@@ -370,7 +364,7 @@
               exchange: '',    //保换期
               defectsunit: '', //保修期已选单位
               exchangeunit: '',//保换期已选单位
-              unit: [{value: '1', label: '天'},{value: '2', label: '周'},{value: '3', label: '月'},{value: '4', label: '年'}]
+              unit: [{value: 1, label: '天'},{value: 2, label: '周'},{value: 3, label: '月'},{value: 4, label: '年'}]
             },
             repairremark: '',//维修备注
             repairMoney: 0,  //维修小计
@@ -398,8 +392,7 @@
             clientNumber: '',//顾客手机号
             payOptions: [],  //支付方式列表
             pay: [],         //已选支付方式
-            evaluate: [{value: 1, label: '很差'},{value: 2, label: '差'},{value: 3, label: '普通'},{value: 4, label: '好'},{value: 5, label: '很好'}],    //评价1
-            assess: [{value: 1, label: '低'},{value: 2, label: '偏低'},{value: 3, label: '适中'},{value: 4, label: '偏高'},{value: 5, label: '高'}],      //评价2
+            evaluate: [{value: 5, label: '很好'},{value: 4, label: '好'},{value: 3, label: '普通'},{value: 2, label: '差'},{value: 1, label: '很差'}],    //评价
             question1: '',
             question2: '',
             question3: '',
@@ -408,11 +401,28 @@
           }
       },
       methods:{
-        clearAll(){
+        defaultDate() {
+          var date = new Date();
+          var seperator1 = "-";
+          var year = date.getFullYear();
+          var month = date.getMonth() + 1;
+          var strDate = date.getDate();
+          if (month >= 1 && month <= 9) {
+            month = "0" + month;
+          }
+          if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+          }
+          var currentdate = year + seperator1 + month + seperator1 + strDate;
+          return currentdate;
+        },
+        clearAll(){  //从编辑页面进来，重新定义原始数据
             this.seat = []; //原始席位号列表
             this.business = []; //原始商家列表
             this.baseArr1 = [];  //基础数据席位号列表
+            this.baseArrWran1 = [];  //基础数据席位号提示列表
             this.baseArr2 = [];  //基础数据商家列表
+            this.baseArrWran2 = [];  //基础数据商家提示列表
             this.allMoney = 0;  //总金额
             /*******************分割线***********************/
             this.seatDone = '';  //已填席位号
@@ -422,7 +432,8 @@
             this.salerName = '';//已填销售员姓名
             this.salerMobile = '';//已填销售员电话
             this.orderid = '';//已填维修单号
-            this.orderDate = '';//已选开单时间
+            this.orderidStatus = false;//维修单号是否重复,true重复、false不重复
+            this.orderDate = this.defaultDate();
             /*******************分割线***********************/
             this.repairTableData = []; //处理维修列表数据
             this.tableData1 = {    //默认维修列表数据
@@ -439,7 +450,7 @@
               exchange: '',    //保换期
               defectsunit: '', //保修期已选单位
               exchangeunit: '',//保换期已选单位
-              unit: [{value: '1', label: '天'},{value: '2', label: '周'},{value: '3', label: '月'},{value: '4', label: '年'}]
+              unit: [{value: 1, label: '天'},{value: 2, label: '周'},{value: 3, label: '月'},{value: 4, label: '年'}]
           };
           this.repairremark = '';//维修备注
           this.repairMoney = 0;  //维修小计
@@ -462,13 +473,12 @@
           };
           this.sellremark = '';  //销售备注
           this.sellMoney = 0;    //销售小计
-            /*******************分割线***********************/
+          /*******************分割线***********************/
           this.clientName = '';  //顾客姓名
           this.clientNumber = '';//顾客手机号
           this.payOptions = [];  //支付方式列表
           this.pay = [];         //已选支付方式
-          this.evaluate = [{value: 1, label: '很差'},{value: 2, label: '差'},{value: 3, label: '普通'},{value: 4, label: '好'},{value: 5, label: '很好'}];    //评价1
-          this.assess = [{value: 1, label: '低'},{value: 2, label: '偏低'},{value: 3, label: '适中'},{value: 4, label: '偏高'},{value: 5, label: '高'}];      //评价2
+          this.evaluate = [{value: 5, label: '很好'},{value: 4, label: '好'},{value: 3, label: '普通'},{value: 2, label: '差'},{value: 1, label: '很差'}];    //评价1
           this.question1 = '';
           this.question2 = '';
           this.question3 = '';
@@ -476,13 +486,15 @@
           this.question5 = '';
           this.repairMsg();
         },
-        repairMsg() {
+        repairMsg() { //请求表单数据
           api.repairMsg({
             success: res =>{
               this.seat = res.data.data.seat;
               this.business  = res.data.data.business;
               this.baseArr1 = this.loadAll(this.seat);
+              this.baseArrWran1 = JSON.parse(JSON.stringify(this.baseArr1));
               this.baseArr2 = this.loadAll(this.business);
+              this.baseArrWran2 = JSON.parse(JSON.stringify(this.baseArr2));
               res.data.data.repair.forEach(item => {
                 item['value'] = item.rid;
                 item['num'] = item.rtid;
@@ -527,21 +539,12 @@
           return father;
         },
         querySearch1(queryString, cb) { //席位号输入建议
-          var restaurants = this.baseArr1;
-          var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
           // 调用 callback 返回建议列表的数据
-          cb(results);
+          cb(this.baseArrWran1);
         },
         querySearch2(queryString, cb) { //商家名称输入建议
-          var restaurants = this.baseArr2;
-          var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
           // 调用 callback 返回建议列表的数据
-          cb(results);
-        },
-        createFilter(queryString) { //输入建议关联方法
-          return (restaurant) => {
-            return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-          };
+          cb(this.baseArrWran2);
         },
         loadAll(data) { //输入建议数据处理
             let arr = [];
@@ -579,8 +582,30 @@
           this.sellTableData.push(JSON.parse(JSON.stringify(this.tableData2)));
         },
         /********分割线**********/
-        editData() {
-          api.formItemDetail({
+        NOchange(val) {
+          let roid = '';
+          if(this.$route.params.roid){
+            roid = this.$route.params.roid;
+          }
+          api.NOstatus({
+            query: {
+              roid: roid,
+              orderid: val
+            },
+            success: res => {
+              this.orderidStatus = res.data.data.status;
+              if(res.data.data.status){
+                this.$message({
+                  message: `NO编号${res.data.msg}`,
+                  type: 'warning'
+                });
+              }
+            }
+          })
+        },
+        /********分割线**********/
+        editData() { //编辑
+          api.formItemEdit({
             query:{
               roid: this.$route.params.roid
             },
@@ -603,12 +628,9 @@
               this.question3 = res.data.data.question3;
               this.question4 = res.data.data.question4;
               this.question5 = res.data.data.question5;
+              this.pay = [];
               res.data.data.order_pay.forEach(item => {
-                let obj = {};
-                obj.pid = item.pid;
-                obj.payName = item.payName;
-                this.pay = [];
-                this.pay.push(item.pid);
+                this.pay.push(JSON.parse(JSON.stringify(item.pid)));
               });
               res.data.data.order_repair.forEach(item => {
                 let obj = {};
@@ -627,10 +649,11 @@
                 obj.num = item.number;
                 obj.detailMethod = item.detail;
                 obj.moneyNum = item.money;
+                obj.unit = this.tableData1.unit;
                 obj.defects = item.guarantee_value;
-                obj.defectsunit = item.guarantee_bit;
+                obj.defectsunit = Number(item.guarantee_bit);
                 obj.exchange = item.preservation_value;
-                obj.exchangeunit = item.preservation_bit;
+                obj.exchangeunit = Number(item.preservation_bit);
                 this.repairTableData = [];
                 this.repairTableData.push(JSON.parse(JSON.stringify(obj)));
                 this.repairMoney += Number(item.money);
@@ -648,6 +671,7 @@
                 obj.num = item.number;
                 obj.exchangeGoods = item.detail;
                 obj.moneyNum = item.money;
+                obj.unit = this.tableData2.unit;
                 obj.defects = item.guarantee_value;
                 obj.defectsunit = item.guarantee_bit;
                 obj.exchange = item.preservation_value;
@@ -669,6 +693,7 @@
             let order_sale = [];
             let order_pay = [];
             if(!this.orderid){ throw 'NO.编号必填！！！'; }
+            if(this.orderidStatus){ throw 'NO.编号重复！！！'; }
             query.orderid = this.orderid;  //必填
             query.seatid = this.seatDone;
             query.businessName = this.businessDone;
@@ -759,7 +784,7 @@
           }catch (e) {
             this.$message({
               message: e,
-              type: 'warning'
+              type: 'error'
             });
           }
         },
@@ -800,15 +825,49 @@
               }
             }
           })
+        },
+        baseSelect(val) { //席位号联动效果
+          api.seatSelect({
+            query: {
+              seatid: val.value
+            },
+            success: res => {
+              console.log(res);
+              if(res.data.data) {
+                this.businessDone = res.data.data.businessName;
+                this.salerMobile = res.data.data.salerMobile;
+                this.salerName = res.data.data.salerName;
+                this.seatMobile = res.data.data.seatMobile;
+              }else {
+                this.businessDone = '';
+                this.salerMobile = '';
+                this.salerName = '';
+                this.seatMobile = '';
+              }
+            }
+          });
         }
       },
       beforeRouteEnter  (to, from, next) {//导航守卫进入此路由触发
         next(vm => {
           vm.clearAll();
         });
-        //this.repairMsg();
+      },
+      beforeRouteUpdate (to, from, next) {
+        next();
+        this.clearAll();
       },
       watch:{
+        seatDone(val) {
+          this.baseArrWran1 = this.baseArr1.filter(item => { //监听席位号输入
+            return item.value.indexOf(val.toUpperCase()) >= 0;
+          })
+        },
+        businessDone(val) {
+          this.baseArrWran2 = this.baseArr2.filter(item => { //监听商家名称输入
+            return item.value.indexOf(val) >= 0;
+          })
+        },
         repairTableData(val) {  //维修表数据变化
           this.repairMoney = 0;
           val.forEach(item => {
@@ -874,6 +933,33 @@
   }
   .remarksInp {
     width: 90%;
+  }
+  @media screen and (max-width: 915px) {
+    .remarks {
+      background-color: #fff;
+      text-align: left;
+      line-height: 60px;
+      font-size: 16px;
+      padding: 0 20px;
+      box-sizing: border-box;
+      display: block;
+      overflow: hidden;
+    }
+    .remarksInpBox {
+      width: 100%;
+
+    }
+    .remarksInp {
+      width: 90%;
+    }
+    .repairMoney {
+      width: 50%;
+      float: left;
+    }
+    .addOne {
+      width: 50%;
+      float: right;
+    }
   }
   .money {
     color: #ff5e00;

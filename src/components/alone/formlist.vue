@@ -53,58 +53,49 @@
               border
               style="width: 100%">
       <el-table-column
-        fixed
         prop="roid"
         label="ID"
         width="80">
       </el-table-column>
       <el-table-column
-        fixed
         prop="orderid"
         label="NO.编号"
         width="170">
       </el-table-column>
       <el-table-column
-        fixed
         prop="seatid"
         label="席位号"
         width="100">
       </el-table-column>
       <el-table-column
-        fixed
         prop="businessName"
         label="商家名称"
-        width="80">
+        width="160">
       </el-table-column>
       <el-table-column
-        fixed
         prop="orderDate"
         label="开单日期"
         width="120">
       </el-table-column>
       <el-table-column
-        fixed
         prop="salerName"
-        label="销售员姓名"
+        label="工程师/销售员"
         width="80">
       </el-table-column>
       <el-table-column
-        fixed
         prop="salerMobile"
         label="销售员手机号"
-        width="130">
+        width="110">
       </el-table-column>
       <el-table-column
-        fixed
         prop="buyerName"
         label="顾客姓名"
         width="80">
       </el-table-column>
       <el-table-column
-        fixed
         prop="buyerMobile"
         label="顾客手机号"
-        width="130">
+        width="110">
       </el-table-column>
       <el-table-column
         fixed="right"
