@@ -17,6 +17,9 @@
         <el-menu-item-group>
           <el-menu-item index="1-2"><router-link to="/formList" active-class>表单查看</router-link></el-menu-item>
         </el-menu-item-group>
+        <el-menu-item-group>
+          <el-menu-item index="1-3"><router-link to="/visitSchedule" active-class>回访进度表</router-link></el-menu-item>
+        </el-menu-item-group>
       </el-submenu>
       <!--2-->
       <el-submenu index="2">
@@ -49,7 +52,6 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
   export default {
     name: "menus",
     data() {

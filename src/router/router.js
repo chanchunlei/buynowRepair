@@ -59,6 +59,24 @@ export default new Router({
           },
           name: 'defaultEdit',
         },
+        {
+          path: '/returnVisit/:roid',
+          component: resolve => require(['../components/alone/returnVisit.vue'],resolve),
+          meta: {
+            title: '回访单',
+            requireAuth: true  // 添加该字段，表示进入这个路由是需要登录的
+          },
+          name: 'returnVisit',
+        },
+        {
+          path: '/visitSchedule',
+          component: resolve => require(['../components/alone/visitSchedule.vue'],resolve),
+          meta: {
+            title: '回访进度表',
+            requireAuth: true  // 添加该字段，表示进入这个路由是需要登录的
+          },
+          name: 'visitSchedule',
+        },
         /**********分割线**********/
         {
           path: '/project',

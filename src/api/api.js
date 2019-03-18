@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseurl = '/gp';
+const baseurl = 'http://bnc.buynow.com.cn';
 //请求数据
 let request = (params,baseurl,url) => {
   axios({
@@ -29,6 +29,23 @@ let requsetToken = (params,baseurl,url) =>{
     .then(function(res){
       params.success && params.success(res)
       // console.log(res)
+    })
+    .catch(function(error){
+      params.error && params.error(error)
+    })
+}
+//下载文件
+let requsetFile = (params,baseurl,url) =>{
+  axios({
+    method: 'get',
+    baseURL:baseurl,
+    url: url,
+    headers: {'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'},
+    responseType: 'blob',
+    data:params.query || {}
+  })
+    .then(function(res){
+      params.success && params.success(res)
     })
     .catch(function(error){
       params.error && params.error(error)
@@ -73,6 +90,33 @@ const projectDelete = params => { //维修项目和品牌删除
 const projectAddone = params => { //维修项目和品牌增加
   request(params,baseurl,'/repair/forms/cr')
 }
+const shopName = params => { //门店信息
+  request(params,baseurl,'/repair/forms/getUserInfo')
+}
+const shopChange = params => { //门店切换
+  request(params,baseurl,'/repair/forms/changeShop')
+}
+const Questionnaire = params => { //问卷调查
+  request(params,baseurl,'/repair/forms/createSurvey')
+}
+const Questionentering = params => { //问卷调查录入
+  request(params,baseurl,'/repair/forms/saveSurvey')
+}
+const QuestionDetail = params => { //问卷详情
+  request(params,baseurl,'/repair/forms/readSurvey')
+}
+const QuestionEdit = params => { //修改回访
+  request(params,baseurl,'/repair/forms/updateSurvey')
+}
+const visitScheduleList = params => { //回访列表
+  request(params,baseurl,'/repair/forms/surveyList')
+}
+const downloadFormFile = params => { //导出维修列表
+  requsetFile(params,baseurl,'/repair/forms/exportOrder')
+}
+const downloadReturnFile = params => { //导出回访列表
+  requsetFile(params,baseurl,'/repair/forms/exportSurvey')
+}
 export default{
   Token,
   repairMsg,
@@ -86,5 +130,14 @@ export default{
   projectList,
   projectAlter,
   projectDelete,
-  projectAddone
+  projectAddone,
+  shopName,
+  shopChange,
+  Questionnaire,
+  Questionentering,
+  QuestionDetail,
+  QuestionEdit,
+  visitScheduleList,
+  downloadFormFile,
+  downloadReturnFile
 }

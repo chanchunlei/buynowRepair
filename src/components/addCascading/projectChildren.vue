@@ -30,7 +30,7 @@
       </div>
     </el-dialog>
     <el-dialog title="新增：" :visible.sync="dialogFormVisible2">
-      <el-input class="inp" v-model="addone" placeholder="请输入维修分类"></el-input>
+      <el-input class="inp" v-model="addone" placeholder="请输入维修名称"></el-input>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible2 = false">取 消</el-button>
         <el-button type="primary" @click="ensureAdd">确 定</el-button>

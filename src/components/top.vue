@@ -5,6 +5,16 @@
       维修 / 销售系统录入系统
     </div>
     <ul class="menus">
+      <li>
+        <el-select v-model="value" @change="changeShop" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.lngshopid"
+            :label="item.lngshopName"
+            :value="item.lngshopid">
+          </el-option>
+        </el-select>
+      </li>
       <li class="admin_logo">
         <p>
           <img src="../assets/logo.png" alt="">
@@ -38,20 +48,56 @@
             path: '/set',
             title: '设置',
           },
-
-        ]
+        ],
+        options: [],
+        value: ''
       }
     },
     created:function(){
       this.changeRoute(this.$route);
+      this.baseData();
     },
     methods:{
+      baseData() { //基础数据
+        api.shopName({
+          query: {
+            username: this.$store.state.userName
+          },
+          success: res => {
+            this.value = res.data.data.lngshopid;
+            if(res.data.data.lngshopid != 0){
+              let obj = {};
+              obj.lngshopid = res.data.data.lngshopid;
+              obj.lngshopName = res.data.data.lngshopName;
+              this.options.push(obj);
+            }else {
+              this.options = res.data.data.shopList;
+            }
+          }
+        })
+      },
       changeRoute:function(Route){//改变路由
         const nowPath = Route.path;
         this.$store.commit('NAV_SHOW',nowPath);
       },
       logout:function(){//登出
         this.$store.commit('LOGOUT');
+      },
+      changeShop(val) {
+        api.shopChange({
+          query: {
+            lngshopid: val
+          },
+          success: res => {
+            this.$notify({
+              title: '成功',
+              message: res.data.msg,
+              type: 'success',
+              duration: 1000
+            });
+            this.$router.push('/');
+          }
+        })
       }
     },
     watch:{

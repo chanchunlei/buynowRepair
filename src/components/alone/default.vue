@@ -2,7 +2,7 @@
   <div class="editBox" v-loading="this.$store.state.loading">
     <el-card class="box-card" :body-style="{ width: '100%', display: 'flex',flexWrap: 'wrap', padding: '0 10px 15px', boxSizing: 'border-box' }">
       <div class="inpBox">
-        <p>席位号：</p>
+        <p class="colors">*席位号*：</p>
         <p>
           <el-autocomplete
           class="inline-input"
@@ -14,7 +14,7 @@
         </p>
       </div>
       <div class="inpBox">
-        <p>商家名称：</p>
+        <p class="colors">*商家名称*：</p>
         <p>
           <el-autocomplete
           class="inline-input"
@@ -25,23 +25,23 @@
         </p>
       </div>
       <div class="inpBox">
-        <p>商家席位电话：</p>
+        <p class="colors">*商家席位电话*：</p>
         <p><el-input type="number" v-model="seatMobile" placeholder="请输入商家席位电话"></el-input></p>
       </div>
       <div class="inpBox">
-        <p>小票编号：</p>
+        <p class="colors">*小票编号*：</p>
         <p><el-input v-model="receiptNo" placeholder="填写时，每个小票间请用“逗号”隔开"></el-input></p>
       </div>
       <div class="inpBox">
-        <p>工程师/销售员姓名 ：</p>
+        <p class="colors">*工程师/销售员姓名* ：</p>
         <p><el-input v-model="salerName" placeholder="请输入姓名"></el-input></p>
       </div>
       <div class="inpBox">
-        <p>销售员电话号码：</p>
+        <p class="colors">*工程师/销售员电话号码*：</p>
         <p><el-input type="number" v-model="salerMobile" placeholder="请输入电话号码"></el-input></p>
       </div>
       <div class="inpBox">
-        <p>NO.编号：</p>
+        <p class="colors">*NO.编号*：</p>
         <p><el-input @change="NOchange" v-model="orderid" placeholder="请输入NO.编号(必填)"></el-input></p>
       </div>
       <div class="inpBox">
@@ -582,7 +582,7 @@
           this.sellTableData.push(JSON.parse(JSON.stringify(this.tableData2)));
         },
         /********分割线**********/
-        NOchange(val) {
+        NOchange(val) {  //查找NO号是否重复
           let roid = '';
           if(this.$route.params.roid){
             roid = this.$route.params.roid;
@@ -610,7 +610,6 @@
               roid: this.$route.params.roid
             },
             success: res =>{
-              //console.log(res);
               this.orderid = res.data.data.orderid;  //必填
               this.seatDone = res.data.data.seatid;
               this.businessDone = res.data.data.businessName;
@@ -686,7 +685,6 @@
         },
         /********分割线**********/
         submitBtn() { //提交表单
-          //console.log(this.pay);
           try{
             let query = {};
             let order_repair = [];
@@ -695,11 +693,17 @@
             if(!this.orderid){ throw 'NO.编号必填！！！'; }
             if(this.orderidStatus){ throw 'NO.编号重复！！！'; }
             query.orderid = this.orderid;  //必填
+            if(!this.seatDone){ throw '席位编号必填！！！'; }
             query.seatid = this.seatDone;
+            if(!this.businessDone){ throw '商家名称必填！！！'; }
             query.businessName = this.businessDone;
+            if(!this.seatMobile){ throw '商家席位电话必填！！！'; }
             query.seatMobile = this.seatMobile;
+            if(!this.receiptNo){ throw '小票编号必填！！！'; }
             query.receiptNo = this.receiptNo;
+            if(!this.salerName){ throw '工程师/销售员姓名必填！！！'; }
             query.salerName = this.salerName;
+            if(!this.salerMobile){ throw '工程师/销售员电话必填！！！'; }
             query.salerMobile = this.salerMobile;
             query.buyerName = this.clientName;
             query.buyerMobile = this.clientNumber;
@@ -788,7 +792,7 @@
             });
           }
         },
-        listSubmit(query) { //提交接口
+        listSubmit(query) { //录入数据提交
           api.repairSave({
             query: query,
             success: res => {
@@ -807,7 +811,7 @@
             }
           })
         },
-        listUpdate(query) { //更新数据
+        listUpdate(query) { //修改数据数据提交
           api.formItemUpdate({
             query: query,
             success: res => {
@@ -832,7 +836,6 @@
               seatid: val.value
             },
             success: res => {
-              console.log(res);
               if(res.data.data) {
                 this.businessDone = res.data.data.businessName;
                 this.salerMobile = res.data.data.salerMobile;
@@ -853,7 +856,7 @@
           vm.clearAll();
         });
       },
-      beforeRouteUpdate (to, from, next) {
+      beforeRouteUpdate (to, from, next) { //导航守卫，组件复用进入此路由触发
         next();
         this.clearAll();
       },
@@ -1019,5 +1022,8 @@
     text-align: center;
     width: 100%;
     font-size: 16px;
+  }
+  .colors {
+    color: #f10125;
   }
 </style>
