@@ -43,6 +43,14 @@
       <div class="inpBox">
         <p class="colors">*NO.编号*：</p>
         <p><el-input @change="NOchange" v-model="orderid" placeholder="请输入NO.编号(必填)"></el-input></p>
+        <div class="takecare">
+          <transition name="el-fade-in-linear">
+            <div v-if="show" class="transition-box">
+              <p>领取商家席位号：{{seatid}}</p>
+              <p>领取商家名称：{{businessName}}</p>
+            </div>
+          </transition>
+        </div>
       </div>
       <div class="inpBox">
         <p>开单日期：</p>
@@ -161,7 +169,6 @@
         <div @click="addRepairListItem" class="addOne"><el-button size="mini" type="primary" icon="el-icon-edit" circle></el-button> 新增</div>
       </div>
     </div>
-
     <!--销售-->
     <div class="salesBox">
       <h2>销售</h2>
@@ -321,15 +328,16 @@
       <el-button @click="submitBtn" :style="{height: '43px',fontSize: '16px', letterSpacing: '4px'}" size="medium" type="success">提交</el-button>
     </div>
   </div>
-
 </template>
-
 <script>
   import api from '../../api/api'
     export default {
         name: "defaultS",
       data(){
           return {
+            show: false,  //提示框
+            businessName: "", //领取商家名称
+            seatid: "",       //领取商家编号
             pickerOptions: {}, //设置原始日期
             seat: [], //原始席位号列表
             business: [], //原始商家列表
@@ -417,6 +425,9 @@
           return currentdate;
         },
         clearAll(){  //从编辑页面进来，重新定义原始数据
+            this.show = false;  //提示框
+            this.businessName = ""; //领取商家名称
+            this.seatid = "";     //领取商家编号
             this.seat = []; //原始席位号列表
             this.business = []; //原始商家列表
             this.baseArr1 = [];  //基础数据席位号列表
@@ -593,6 +604,13 @@
               orderid: val
             },
             success: res => {
+              if(res.data.data.business) {
+                this.show = true;
+                this.businessName = res.data.data.business.businessName; //领取商家名称
+                this.seatid = res.data.data.business.seatid;
+              }else {
+                this.show = false;
+              }
               this.orderidStatus = res.data.data.status;
               if(res.data.data.status){
                 this.$message({
@@ -1025,5 +1043,10 @@
   }
   .colors {
     color: #f10125;
+  }
+  .takecare {
+    font-size: 16px;
+    margin-top: 15px;
+    color: dodgerblue;
   }
 </style>

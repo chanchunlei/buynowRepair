@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseurl = 'http://bnc.buynow.com.cn';
+const baseurl = '/gp';
 //请求数据
 let request = (params,baseurl,url) => {
   axios({
@@ -117,6 +117,15 @@ const downloadFormFile = params => { //导出维修列表
 const downloadReturnFile = params => { //导出回访列表
   requsetFile(params,baseurl,'/repair/forms/exportSurvey')
 }
+const allotMsg = params => { //四联单发放信息
+  request(params,baseurl,'/repair/forms/billCreate')
+}
+const allotMsgSave = params => { //四联单发放信息保存
+  request(params,baseurl,'/repair/forms/billSave')
+}
+const allotMsgList = params => { //四联单发放信息保存列表
+  request(params,baseurl,'/repair/forms/billList')
+}
 export default{
   Token,
   repairMsg,
@@ -139,5 +148,8 @@ export default{
   QuestionEdit,
   visitScheduleList,
   downloadFormFile,
-  downloadReturnFile
+  downloadReturnFile,
+  allotMsg,
+  allotMsgSave,
+  allotMsgList
 }

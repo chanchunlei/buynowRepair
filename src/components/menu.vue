@@ -47,6 +47,19 @@
           <el-menu-item index="3-2"><router-link to="/brandChildren" active-class>品牌名称</router-link></el-menu-item>
         </el-menu-item-group>
       </el-submenu>
+      <!--4-->
+      <el-submenu index="4">
+        <template slot="title">
+          <i class="iconfont icon-pinpai"></i>
+          <span slot="title">分配单</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="4-1"><router-link to="/distribution" active-class>四联单发放</router-link></el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group>
+          <el-menu-item index="4-2"><router-link to="/distributionList" active-class>发放列表</router-link></el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
     </el-menu>
   </div>
 </template>

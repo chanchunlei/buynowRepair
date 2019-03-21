@@ -114,6 +114,24 @@ export default new Router({
           },
           name: 'brandChildren',
         },
+        {
+          path: '/distribution',
+          component: resolve => require(['../components/allot/distribution.vue'],resolve),
+          meta: {
+            title: '四联单发放',
+            requireAuth: true  // 添加该字段，表示进入这个路由是需要登录的
+          },
+          name: 'distribution',
+        },
+        {
+          path: '/distributionList',
+          component: resolve => require(['../components/allot/distributionList.vue'],resolve),
+          meta: {
+            title: '发放列表',
+            requireAuth: true  // 添加该字段，表示进入这个路由是需要登录的
+          },
+          name: 'distributionList',
+        },
         /**********分割线**********/
         {
           path: '/403',

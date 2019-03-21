@@ -62,7 +62,6 @@
         <el-button @click="file" type="success">导出列表</el-button>
       </div>
     </div>
-
     <!--表格-->
     <el-table class="box"
               :data="list"
